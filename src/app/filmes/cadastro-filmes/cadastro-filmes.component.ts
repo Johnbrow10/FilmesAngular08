@@ -1,6 +1,11 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { MatDialog } from "@angular/material";
+import { FilmeService } from "src/app/core/filmes.service";
+import { AlertaComponent } from "src/app/shared/components/alerta/alerta.component";
 import { ValidarCamposService } from "src/app/shared/components/campo/validar-campos.service";
+import { Alerta } from "src/app/shared/models/alerta";
+import { Filme } from "src/app/shared/models/filme";
 
 @Component({
   selector: "dio-cadastro-filmes",
@@ -12,7 +17,9 @@ export class CadastroFilmesComponent implements OnInit {
   generos: Array<string>;
   constructor(
     public validacao: ValidarCamposService,
-    private fb: FormBuilder
+    public dialog: MatDialog,
+    private fb: FormBuilder,
+    private filmeService: FilmeService
   ) {}
 
   get f() {
@@ -48,16 +55,36 @@ export class CadastroFilmesComponent implements OnInit {
     });
   }
 
-  salvar(): void {
+  submit(): void {
     this.cadastro.markAllAsTouched();
     if (this.cadastro.invalid) {
       return;
     }
 
-    alert("SUCESSO!!\n\n" + JSON.stringify(this.cadastro.value, null, 4));
+    const filme = this.cadastro.getRawValue() as Filme;
+    this.salvar(filme);
   }
 
   reiniciarForm(): void {
     this.cadastro.reset();
+  }
+
+  private salvar(filme: Filme): void {
+    this.filmeService.salvar(filme).subscribe(
+      () => {
+        const config = {
+          data: {
+            btnSucesso: "Ir Para a listagem",
+            btnCancelar: "Cadastrar um novo filme",
+            corBtnCancelar: "primary",
+            possuirBtnFechar: true,
+          } as Alerta,
+        };
+        const dialogref = this.dialog.open(AlertaComponent,config);
+      },
+      () => {
+        alert("Erro ao Salvar");
+      }
+    );
   }
 }
