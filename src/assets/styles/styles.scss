@@ -18,11 +18,23 @@ body {
 }
 
 .main-div {
-  display: flex;
+  display        : flex;
   justify-content: center;
-  align-items: center;
+  align-items    : center;
 }
 
 .full-width {
   width: 100%;
+}
+
+.float-left {
+  float: left;
+}
+
+.margin10 {
+  margin: 10px;
+}
+
+.padding10 {
+  padding: 10px
 }
