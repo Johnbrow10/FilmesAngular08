@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
+import { debounceTime } from "rxjs/operators";
 import { FilmeService } from "src/app/core/filmes.service";
 import { ConfigParams } from "src/app/shared/models/config-params";
 import { Filme } from "src/app/shared/models/filme";
@@ -10,11 +11,13 @@ import { Filme } from "src/app/shared/models/filme";
   styleUrls: ["./listagem-filmes.component.scss"],
 })
 export class ListagemFilmesComponent implements OnInit {
+  readonly semFoto =
+    "https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cindra/imagens/sem.jpg.gif/image";
+
   config: ConfigParams = {
     pagina: 0,
-    limite: 4
-
-  }
+    limite: 4,
+  };
   filmes: Filme[] = [];
   filtrosLisatgem: FormGroup;
   generos: Array<string>;
@@ -27,12 +30,15 @@ export class ListagemFilmesComponent implements OnInit {
       genero: [""],
     });
 
-    this.filtrosLisatgem.get("texto").valueChanges.subscribe((val: string) => {
-      this.config.pesquisa = val;
-      this.resetarConsulta();
-    });
+    this.filtrosLisatgem
+      .get("texto")
+      .valueChanges.pipe(debounceTime(400))
+      .subscribe((val: string) => {
+        this.config.pesquisa = val;
+        this.resetarConsulta();
+      });
     this.filtrosLisatgem.get("genero").valueChanges.subscribe((val: string) => {
-      this.config.campo = { tipo: 'genero', valor: val };
+      this.config.campo = { tipo: "genero", valor: val };
       this.resetarConsulta();
     });
 
