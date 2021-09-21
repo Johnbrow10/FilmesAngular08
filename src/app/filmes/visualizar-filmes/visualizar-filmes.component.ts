@@ -1,6 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { MatDialog } from "@angular/material";
+import { ActivatedRoute, Router } from "@angular/router";
 import { FilmeService } from "src/app/core/filmes.service";
+import { AlertaComponent } from "src/app/shared/components/alerta/alerta.component";
+import { Alerta } from "src/app/shared/models/alerta";
 import { Filme } from "src/app/shared/models/filme";
 
 @Component({
@@ -13,18 +16,43 @@ export class VisualizarFilmesComponent implements OnInit {
   readonly semFoto =
     "https://www2.camara.leg.br/atividade-legislativa/comissoes/comissoes-permanentes/cindra/imagens/sem.jpg.gif/image";
 
+  id: number;
   constructor(
+    public dialog: MatDialog,
     private activatedRoute: ActivatedRoute,
-    private filmeService: FilmeService
+    private filmeService: FilmeService,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.visualizar(this.activatedRoute.snapshot.params["id"]);
+    this.id = this.activatedRoute.snapshot.params["id"];
+    this.visualizar();
   }
 
-  private visualizar(id: number): void {
+  excluir(): void {
+    const config = {
+      data: {
+        titulo: "Você tem certeza que deseja excluir?",
+        descricao:
+          "Caso você tenha certeza que deseja excluir, clique no botão OK",
+        corBtnSucesso: "warn",
+        corBtnCancelar: "primary",
+        possuirBtnFechar: true,
+      } as Alerta,
+    };
+    const dialogref = this.dialog.open(AlertaComponent, config);
+    dialogref.afterClosed().subscribe((opcao: boolean) => {
+      if (opcao) {
+        this.filmeService.excluir(this.id).subscribe(() => {
+          this.router.navigateByUrl("/filmes");
+        });
+      }
+    });
+  }
+
+  private visualizar(): void {
     this.filmeService
-      .visualizar(id)
+      .visualizar(this.id)
       .subscribe((filme: Filme) => (this.filme = filme));
   }
 }

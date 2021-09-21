@@ -89,16 +89,6 @@
       "nota": 7.5,
       "urlIMDb": "https://www.imdb.com/title/tt6146586/",
       "genero": "Ação"
-    },
-    {
-      "titulo": "sem imagem e descricao",
-      "urlFoto": "",
-      "dtLancamento": "2021-09-20T03:00:00.000Z",
-      "descricao": "",
-      "nota": 10,
-      "urlIMDb": "",
-      "genero": "Terror",
-      "id": 10
     }
   ]
 }
